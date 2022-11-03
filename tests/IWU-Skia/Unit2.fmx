@@ -1,0 +1,509 @@
+object Form2: TForm2
+  Left = 0
+  Top = 0
+  Caption = 'Form2'
+  ClientHeight = 442
+  ClientWidth = 713
+  Fill.Color = xFF0F0F0F
+  Fill.Kind = Solid
+  StyleLookup = 'calloutpanelstyle'
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  DesignerMasterStyle = 0
+  object TabControl1: TTabControl
+    Align = Client
+    Size.Width = 713.000000000000000000
+    Size.Height = 442.000000000000000000
+    Size.PlatformDefault = False
+    TabIndex = 0
+    TabOrder = 0
+    TabPosition = PlatformDefault
+    Sizes = (
+      713s
+      416s
+      713s
+      416s
+      713s
+      416s
+      713s
+      416s)
+    object TabItem1: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = True
+      Size.Width = 47.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Main'
+      ExplicitSize.cx = 57.000000000000000000
+      ExplicitSize.cy = 30.000000000000000000
+      object GroupBox1: TGroupBox
+        Align = MostRight
+        Margins.Right = 5.000000000000000000
+        Margins.Bottom = 5.000000000000000000
+        Position.X = 545.000000000000000000
+        Size.Width = 163.000000000000000000
+        Size.Height = 411.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Actions'
+        TabOrder = 0
+        object actions: TVertScrollBox
+          Align = Client
+          Margins.Left = 8.000000000000000000
+          Margins.Top = 24.000000000000000000
+          Margins.Right = 8.000000000000000000
+          Margins.Bottom = 5.000000000000000000
+          Size.Width = 147.000000000000000000
+          Size.Height = 382.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 38
+          Viewport.Width = 147.000000000000000000
+          Viewport.Height = 382.000000000000000000
+          object Button1: TButton
+            Align = Top
+            StyledSettings = [Family, Style]
+            Margins.Bottom = 5.000000000000000000
+            Position.Y = 83.000000000000000000
+            Size.Width = 147.000000000000000000
+            Size.Height = 22.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 6
+            Text = 'Start from URLs'
+            TextSettings.FontColor = xFF4A9000
+            OnClick = Button1Click
+          end
+          object Display: TText
+            Align = MostTop
+            Size.Width = 147.000000000000000000
+            Size.Height = 56.000000000000000000
+            Size.PlatformDefault = False
+            Text = '{ waiting }'
+          end
+          object Button2: TButton
+            Align = Top
+            StyledSettings = [Family, Style]
+            Margins.Bottom = 5.000000000000000000
+            Position.Y = 110.000000000000000000
+            Size.Width = 147.000000000000000000
+            Size.Height = 22.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 0
+            Text = 'Abort all'
+            TextSettings.FontColor = xFFBE5500
+            OnClick = Button2Click
+          end
+          object Button3: TButton
+            Align = Top
+            StyledSettings = [Family, Style]
+            Margins.Bottom = 5.000000000000000000
+            Position.Y = 137.000000000000000000
+            Size.Width = 147.000000000000000000
+            Size.Height = 22.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 3
+            Text = 'Start and stop'
+            TextSettings.FontColor = xFFBE5500
+            OnClick = Button3Click
+          end
+          object Button4: TButton
+            Align = Top
+            StyledSettings = [Family, Style]
+            Margins.Bottom = 5.000000000000000000
+            Position.Y = 56.000000000000000000
+            Size.Width = 147.000000000000000000
+            Size.Height = 22.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 4
+            Text = 'Stop and start'
+            TextSettings.FontColor = xFF4A9000
+            OnClick = Button4Click
+          end
+          object Button5: TButton
+            Align = Top
+            StyledSettings = [Family, Style]
+            Margins.Bottom = 5.000000000000000000
+            Position.Y = 164.000000000000000000
+            Size.Width = 147.000000000000000000
+            Size.Height = 22.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 2
+            Text = 'Try deadlock'
+            TextSettings.FontColor = xFFF30000
+            OnClick = Button5Click
+          end
+          object Button6: TButton
+            Align = Top
+            StyledSettings = [Family, Style]
+            Margins.Bottom = 5.000000000000000000
+            Position.Y = 218.000000000000000000
+            Size.Width = 147.000000000000000000
+            Size.Height = 22.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 5
+            Text = 'Clear all'
+            TextSettings.FontColor = xFF326100
+            OnClick = Button6Click
+          end
+          object Button7: TButton
+            Align = Top
+            StyledSettings = [Family, Style]
+            Margins.Bottom = 5.000000000000000000
+            Position.Y = 191.000000000000000000
+            Size.Width = 147.000000000000000000
+            Size.Height = 22.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 1
+            Text = 'Recreate manager'
+            TextSettings.FontColor = xFFF30000
+            OnClick = Button7Click
+          end
+          object Layout1: TLayout
+            Align = Top
+            Margins.Bottom = 5.000000000000000000
+            Position.Y = 245.000000000000000000
+            Size.Width = 147.000000000000000000
+            Size.Height = 59.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 8
+            object Edit1: TEdit
+              Touch.InteractiveGestures = [LongTap, DoubleTap]
+              Align = Bottom
+              TabOrder = 0
+              FilterChar = '0987654321'
+              Text = '5'
+              TextSettings.HorzAlign = Center
+              Position.Y = 27.000000000000000000
+              Size.Width = 147.000000000000000000
+              Size.Height = 32.000000000000000000
+              Size.PlatformDefault = False
+              OnChange = Edit1Change
+            end
+            object Text2: TText
+              Align = Client
+              Size.Width = 147.000000000000000000
+              Size.Height = 27.000000000000000000
+              Size.PlatformDefault = False
+              Text = 'Threads count'
+            end
+          end
+          object CheckBox1: TCheckBox
+            Align = Top
+            StyledSettings = [Family, Style, FontColor]
+            IsChecked = True
+            Margins.Bottom = 5.000000000000000000
+            Position.Y = 333.000000000000000000
+            Size.Width = 147.000000000000000000
+            Size.Height = 19.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 10
+            Text = 'Save to cache'
+            OnChange = CheckBox1Change
+          end
+          object CheckBox2: TCheckBox
+            Align = Top
+            StyledSettings = [Family, Style, FontColor]
+            IsChecked = True
+            Margins.Bottom = 5.000000000000000000
+            Position.Y = 309.000000000000000000
+            Size.Width = 147.000000000000000000
+            Size.Height = 19.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 9
+            Text = 'Load from cache'
+            OnChange = CheckBox2Change
+          end
+        end
+      end
+      object VertScrollBox1: TVertScrollBox
+        Align = Client
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Margins.Bottom = 5.000000000000000000
+        Size.Width = 535.000000000000000000
+        Size.Height = 406.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        Viewport.Width = 535.000000000000000000
+        Viewport.Height = 406.000000000000000000
+        object GridPanelLayout1: TGridPanelLayout
+          Align = Client
+          Size.Width = 535.000000000000000000
+          Size.Height = 406.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          ColumnCollection = <
+            item
+              Value = 30.303030303030300000
+            end
+            item
+              Value = 30.303030303030300000
+            end
+            item
+              Value = 39.393939393939400000
+            end>
+          ControlCollection = <>
+          RowCollection = <
+            item
+              Value = 50.000000000000000000
+            end
+            item
+              Value = 50.000000000000000000
+            end
+            item
+            end>
+        end
+      end
+    end
+    object TabItem3: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = False
+      Size.Width = 41.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Urls'
+      ExplicitSize.cx = 49.000000000000000000
+      ExplicitSize.cy = 30.000000000000000000
+      object MemoUrls: TMemo
+        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        DataDetectorTypes = []
+        Lines.Strings = (
+          'https://www.gstatic.com/webp/gallery/2.webp'
+          'https://www.gstatic.com/webp/gallery/1.webp'
+          'https://www.gstatic.com/webp/gallery/3.webp'
+          'https://www.gstatic.com/webp/gallery/4.webp'
+          
+            'https://media.tenor.com/m3SBhmatvbMAAAAd/seriously-seriously-cat' +
+            '.gif'
+          
+            'https://media.tenor.com/kHcmsxlKHEAAAAAC/rock-one-eyebrow-raised' +
+            '-rock-staring.gif'
+          'https://media.tenor.com/fn4fAqOlpM4AAAAd/the-rock.gif'
+          'https://media.tenor.com/p7lB5ogf9mMAAAAd/fingering-window.gif'
+          
+            'https://media.tenor.com/V2CI8sW4KMEAAAAi/jett-laugh-spray-jett.g' +
+            'if'
+          'https://media.tenor.com/-BmxTLKOUycAAAAi/knifed-spray-omen.gif'
+          
+            'https://media.tenor.com/sQO2S6BNDroAAAAi/reyna-kissy-face-spray-' +
+            'reyna.gif'
+          
+            'https://media.tenor.com/LA27UCwAcccAAAAi/also-fine-spray-raze.gi' +
+            'f'
+          
+            'https://media.tenor.com/knDydV6tp9oAAAAi/bawk-bawk-brimstone-spr' +
+            'ay-valorant.gif'
+          
+            'https://media.tenor.com/qAz04SfZarsAAAAi/raze-pretty-please-spra' +
+            'y-raze.gif'
+          
+            'https://media.tenor.com/jTRLoqLNueMAAAAi/duren-spray-valorant.gi' +
+            'f'
+          
+            'https://media.tenor.com/n7MruEotx-oAAAAi/this-is-really-not-fine' +
+            '-sage.gif'
+          'https://media.tenor.com/Y6Zs8FgpaXIAAAAi/take-my-cred-skye.gif'
+          
+            'https://media.tenor.com/EtnTJ-LhpQcAAAAi/cypher-stonks-valorant.' +
+            'gif'
+          
+            'https://media.tenor.com/iM4tcYAJiF4AAAAi/grenadier-training-bot-' +
+            'spray-jett.gif'
+          
+            'https://media.tenor.com/2QQcMNpTazkAAAAi/woke-up-thinking-lineup' +
+            's-spray-valorant.gif'
+          
+            'https://media.tenor.com/jnx7tCP3RwIAAAAi/excuse-me-spray-valoran' +
+            't.gif'
+          
+            'https://media.tenor.com/JVjRkz3j2A0AAAAi/astra-volunteers-spray-' +
+            'valorant.gif'
+          'https://media.tenor.com/odXa_mPTg20AAAAj/stop-jett.gif'
+          
+            'https://media.tenor.com/bdXrzy-_-LMAAAAM/sage-dance-funny-dance.' +
+            'gif'
+          
+            'https://media.tenor.com/e83oqd72kYwAAAAj/cypher-cypher-valorant.' +
+            'gif'
+          
+            'https://media.tenor.com/fkhqw9KsJx4AAAAj/cool-joy-spray-valorant' +
+            '.gif')
+        Align = Client
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Margins.Bottom = 5.000000000000000000
+        Size.Width = 703.000000000000000000
+        Size.Height = 406.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Viewport.Width = 683.000000000000000000
+        Viewport.Height = 402.000000000000000000
+      end
+    end
+    object TabItem4: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = False
+      Size.Width = 84.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Module test'
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 30.000000000000000000
+      object Button8: TButton
+        StyledSettings = [Family, Style, FontColor]
+        Position.X = 8.000000000000000000
+        Position.Y = 175.000000000000000000
+        Size.Width = 129.000000000000000000
+        Size.Height = 34.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Text = 'Set random images'
+        OnClick = Button8Click
+      end
+      object IWUModuleTestLayout: TLayout
+        Position.Y = 8.000000000000000000
+        Size.Width = 665.000000000000000000
+        Size.Height = 159.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        object Circle1: TCircle
+          Fill.Bitmap.WrapMode = TileStretch
+          Fill.Kind = Bitmap
+          Position.X = 313.000000000000000000
+          Position.Y = 8.000000000000000000
+          Size.Width = 62.000000000000000000
+          Size.Height = 65.000000000000000000
+          Size.PlatformDefault = False
+          Stroke.Color = xFF6CF8FD
+        end
+        object Circle2: TCircle
+          Fill.Bitmap.WrapMode = TileStretch
+          Fill.Kind = Bitmap
+          Position.X = 241.000000000000000000
+          Position.Y = 8.000000000000000000
+          Size.Width = 64.000000000000000000
+          Size.Height = 65.000000000000000000
+          Size.PlatformDefault = False
+          Stroke.Color = xFF50ED3E
+        end
+        object Circle3: TCircle
+          Fill.Bitmap.WrapMode = TileStretch
+          Fill.Kind = Bitmap
+          Position.X = 241.000000000000000000
+          Position.Y = 79.000000000000000000
+          Size.Width = 64.000000000000000000
+          Size.Height = 72.000000000000000000
+          Size.PlatformDefault = False
+          Stroke.Color = xFFAFF676
+          Stroke.Dash = DashDotDot
+        end
+        object Circle4: TCircle
+          Fill.Bitmap.WrapMode = TileStretch
+          Fill.Kind = Bitmap
+          Position.X = 313.000000000000000000
+          Position.Y = 79.000000000000000000
+          Size.Width = 62.000000000000000000
+          Size.Height = 72.000000000000000000
+          Size.PlatformDefault = False
+          Stroke.Color = xFF9DAEFD
+          Stroke.Dash = DashDot
+        end
+        object RoundRect1: TRoundRect
+          Fill.Bitmap.WrapMode = Tile
+          Fill.Kind = Bitmap
+          Position.X = 8.000000000000000000
+          Position.Y = 8.000000000000000000
+          Size.Width = 225.000000000000000000
+          Size.Height = 135.000000000000000000
+          Size.PlatformDefault = False
+          Stroke.Color = xFFFF8787
+        end
+        object Image1: TImage
+          MultiResBitmap = <
+            item
+            end>
+          Position.X = 506.000000000000000000
+          Position.Y = 8.000000000000000000
+          Size.Width = 153.000000000000000000
+          Size.Height = 50.000000000000000000
+          Size.PlatformDefault = False
+        end
+        object CalloutRectangle1: TCalloutRectangle
+          Fill.Bitmap.WrapMode = TileStretch
+          Fill.Kind = Bitmap
+          Position.X = 506.000000000000000000
+          Position.Y = 80.000000000000000000
+          Size.Width = 127.000000000000000000
+          Size.Height = 57.000000000000000000
+          Size.PlatformDefault = False
+          Stroke.Color = xFFCCF463
+          CalloutWidth = 23.000000000000000000
+          CalloutLength = 11.000000000000000000
+        end
+        object Pie1: TPie
+          Fill.Bitmap.WrapMode = TileStretch
+          Fill.Kind = Bitmap
+          Position.X = 383.000000000000000000
+          Position.Y = 8.000000000000000000
+          Size.Width = 115.000000000000000000
+          Size.Height = 65.000000000000000000
+          Size.PlatformDefault = False
+          Stroke.Color = xFF96F7FE
+          EndAngle = -240.000000000000000000
+        end
+        object ImageControl1: TImageControl
+          Position.X = 416.000000000000000000
+          Position.Y = 81.000000000000000000
+          Size.Width = 67.000000000000000000
+          Size.Height = 68.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 8
+        end
+      end
+    end
+    object TabItem2: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = False
+      Size.Width = 38.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'log'
+      ExplicitSize.cx = 38.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object Memo1: TMemo
+        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        DataDetectorTypes = []
+        Align = Client
+        Margins.Left = 4.000000000000000000
+        Margins.Top = 4.000000000000000000
+        Margins.Right = 4.000000000000000000
+        Margins.Bottom = 4.000000000000000000
+        Size.Width = 705.000000000000000000
+        Size.Height = 408.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Viewport.Width = 701.000000000000000000
+        Viewport.Height = 404.000000000000000000
+      end
+    end
+  end
+end

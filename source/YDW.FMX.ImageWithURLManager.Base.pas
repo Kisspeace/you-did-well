@@ -36,6 +36,7 @@ type
       procedure LoadImage(AImage: IImageWithUrl); virtual;
       procedure AbortImage(AImage: IImageWithUrl); virtual;
       function IsLoadingNow(AImage: IImageWithUrl): boolean;
+      function WaitForItem(AImage: IImageWithUrl): LongWord;
       constructor Create(AOwner: TComponent); override;
       destructor Destroy; override;
     published
@@ -69,7 +70,7 @@ end;
 destructor TMultiThreadImageContentManagerAbs.Destroy;
 begin
   Self.FWorker.Terminate;
-  Self.FWorker.WaitForFinish;
+  Self.FWorker.WaitFor;
   FWorker.Free;
   inherited;
 end;
@@ -105,7 +106,7 @@ var
 begin
   Result := False;
 
-  FLock.BeginRead;
+  FWorker.FLock.BeginRead;
   try
 
     // Searching image in Running list
@@ -116,7 +117,7 @@ begin
     Result := ( FWorker.FQueue.IndexOf(AImage) <> -1 );
 
   finally
-    FLock.EndRead;
+    FWorker.FLock.EndRead;
   end;
 end;
 
@@ -153,6 +154,12 @@ procedure TMultiThreadImageContentManagerAbs.SetThreadsCount(
   const Value: integer);
 begin
   FWorker.ThreadsCount := Value;
+end;
+
+function TMultiThreadImageContentManagerAbs.WaitForItem(
+  AImage: IImageWithUrl): LongWord;
+begin
+  Result := Self.FWorker.WaitForItem(AImage);
 end;
 
 { TMultiThreadImageContentManagerAbs.TWorkerThread }

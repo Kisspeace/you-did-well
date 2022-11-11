@@ -85,7 +85,7 @@ begin
       AddSpeaker('AAA !!!', 7);
     end;
 
-    LForum.WaitForFinish;
+    LForum.WaitFor;
     LForum.Free;
   except
     on E: Exception do

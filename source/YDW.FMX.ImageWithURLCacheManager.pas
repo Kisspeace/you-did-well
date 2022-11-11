@@ -199,7 +199,7 @@ begin
 
       if SyncBitmapLoadFromFile then begin
 
-        TThread.Synchronize(nil, procedure
+        TThread.Synchronize(TThread.Current, procedure
         begin
           ABitmap.LoadFromFile(LFullFilename);
         end);
@@ -211,7 +211,7 @@ begin
 
         try
           LBufBmp.LoadFromFile(LFullFilename);
-          TThread.Synchronize(nil, procedure begin
+          TThread.Synchronize(TThread.Current, procedure begin
             ABitmap.Assign(LBufBmp);
           end);
         finally

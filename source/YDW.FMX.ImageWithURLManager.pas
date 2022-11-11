@@ -17,12 +17,17 @@ type
 
   TNetHttpClientEvent = reference to procedure (Sender: TObject; AClient: TNetHttpClient);
   TIWULoadExceptionEvent = reference to procedure (Sender: TObject; AImage: IImageWithURL; const AUrl: string; const AException: Exception);
+  TFilterResponseEvent = reference to procedure (Sender: TObject; const AUrl: string; const AResponse: IHttpResponse; var AAllow: boolean);
 
   TImageWithUrlManager = Class(TMultiThreadImageContentManagerAbs, IImageWithURLManager)
     protected const
-      { ❤ - default firefox headers }
+      { ❤ - default headers }
       DEF_USERAGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101 Firefox/102.0';
-      DEF_ACCEPT_ENCODING = 'gzip, deflate, br';
+      {$IFDEF MSWINDOWS}
+      DEF_ACCEPT_ENCODING = 'gzip, deflate';
+      {$ELSE}
+      DEF_ACCEPT_ENCODING = '';
+      {$ENDIF}
       DEF_WEB_TIMEOUTS = 6000;
     private
       function GetLoadThumbnailFromFile: boolean;
@@ -36,6 +41,7 @@ type
       FThumbSize: TSizeF;
       FOnWebClientCreate: TNetHttpClientEvent;
       FOnImageLoadException: TIWULoadExceptionEvent;
+      FOnFilterResponse: TFilterResponseEvent;
       FSyncBitmapLoadFromFile: boolean;
       procedure EncodeImage(AStream: TStream; Out AEncodedImage: TStream); virtual;
       procedure SubThreadExecute(AValue: IImageWithURL); override;
@@ -45,6 +51,7 @@ type
       property LoadThumbnailFromFile: boolean read GetLoadThumbnailFromFile write SetLoadThumbnailFromFile default True;
       property ThumbSize: TSizeF read GetThumbSize write SetThumbSize;
       property OnWebClientCreate: TNetHttpClientEvent read FOnWebClientCreate write FOnWebClientCreate;
+      property OnFilterResponse: TFilterResponseEvent read FOnFilterResponse write FOnFilterResponse;
       property OnImageLoadException: TIWULoadExceptionEvent read FOnImageLoadException write FOnImageLoadException;
       property SyncBitmapLoadFromFile: boolean read GetSyncBitmapLoadFromFile write SetSyncBitmapLoadFromFile default True;
   End;
@@ -144,6 +151,16 @@ var
       FOnImageLoadException(Self, LImage, LUrl, AExcept);
   end;
 
+  function AllowThisResponse(const AUrl: string; const AResponse: IHttpResponse): boolean;
+  var
+    LAllow: boolean;
+  begin
+    LAllow := TRUE;
+    if Assigned(OnFilterResponse) then
+      OnFilterResponse(Self, AUrl, AResponse, LAllow);
+    Result := LAllow;
+  end;
+
 begin
   LImage := AValue;
 
@@ -218,6 +235,8 @@ begin
 
           LResponse := LClient.Get(LUrl);
           if TThread.Current.CheckTerminated then exit;
+
+          if not AllowThisResponse(LUrl, LResponse) then exit;
 
           Self.EncodeImage(LResponse.ContentStream, LFinalImage);
 

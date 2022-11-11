@@ -129,32 +129,6 @@ implementation
   uses YDW.Debug;
 {$R *.fmx}
 
-procedure WriteToFile(AFileName, Atext: string);
-var
-  F: TFileStream;
-  Encoding: TEncoding;
-  LBytes: TBytes;
-  LDir: string;
-begin
-  try
-    LDir := Tpath.GetDirectoryName(AFilename);
-    if Not DirectoryExists(LDir) then
-      CreateDir(LDir);
-
-    if FileExists(AFilename) then
-      F := TFileStream.Create(AFilename, FmOpenWrite)
-    else
-      F := TFileStream.Create(AFilename, FmCreate);
-
-    Encoding := TEncoding.Default;
-    LBytes := Encoding.GetBytes(AText);
-    F.Position := F.Size;
-    F.Write(LBytes, 0, Length(LBytes));
-  finally
-    F.Free;
-  end;
-end;
-
 function TForm2.GetFinishedCount: integer;
 var
   I: integer;
@@ -503,7 +477,7 @@ var
 
 begin
   FWorker.Terminate;
-  FWorker.WaitForFinish;
+  FWorker.WaitFor;
   Images.Clear;
 end;
 

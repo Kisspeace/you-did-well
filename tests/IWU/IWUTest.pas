@@ -206,35 +206,54 @@ end;
 
 procedure TForm2.BtnStressStartClick(Sender: TObject);
 var
-  I: integer;
   LCount: integer;
-
-  function GetUrls(ACount: integer = 20): TArray<String>;
-  var
-    I: integer;
-  begin
-    Result := [];
-    for I := 1 to ACount do begin
-      Result := Result + [Self.RandUrl];
-    end;
-  end;
+  LWorker: TThread;
 
 begin
   LCount := StressEdit.Text.ToInteger;
-  for I := 1 to LCount do begin
-    Form2.Caption := I.ToString + ' \ ' + LCount.ToString;
-    StressTest.Go(GetUrls(15));
-    sleep(Random(10));
-    CheckSynchronize(1);
-    Application.ProcessMessages;
 
-    if I mod 3 = 0 then begin
-      StressTest.Clear;
+  LWorker := TThread.CreateAnonymousThread(
+  procedure
+  var
+    I: integer;
+
+    function GetUrls(ACount: integer = 20): TArray<String>;
+    var
+      I: integer;
+    begin
+      Result := [];
+      for I := 1 to ACount do begin
+        Result := Result + [Self.RandUrl];
+      end;
     end;
 
-    Application.ProcessMessages;
-    CheckSynchronize(10);
-  end;
+  begin
+    for I := 1 to LCount do begin
+      Form2.Caption := I.ToString + ' \ ' + LCount.ToString;
+      StressTest.Go(GetUrls(15));
+      sleep(Random(10));
+
+      TThread.Synchronize(LWorker, procedure begin
+        Application.ProcessMessages;
+      end);
+      
+      if I mod 3 = 0 then begin
+        StressTest.Clear;
+      end;
+
+
+      TThread.Synchronize(LWorker, procedure begin
+        Application.ProcessMessages;
+        CheckSynchronize(10);
+      end);
+
+    end;
+  end);
+
+  LWorker.FreeOnTerminate := False;
+  LWorker.Start;
+  LWorker.WaitFor;
+
   StressTest.Clear;
 end;
 
@@ -517,7 +536,7 @@ var
 
 begin
   FWorker.Terminate;
-  FWorker.WaitForFinish;
+  FWorker.WaitFor;
   Images.Clear;
 end;
 

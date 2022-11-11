@@ -49,6 +49,7 @@ type
     procedure LoadImage(AImage: IImageWithUrl);
     procedure AbortImage(AImage: IImageWithUrl);
     function IsLoadingNow(AImage: IImageWithUrl): boolean;
+    function WaitForItem(AImage: IImageWithUrl): LongWord;
     { ❤ -- properties -- }
     property CacheManager: IImageWithUrlCacheManager read GetCacheManager write SetCacheManager;
     property EnableSaveToCache: boolean read GetEnableSaveToCache write SetEnableSaveToCache;
@@ -63,20 +64,14 @@ type
     function IsCached(AUrl: string): boolean;
   End;
 
-  procedure IWUWaitForFinish(AImage: IImageWithURL);
+  function IWUWaitForFinish(AImage: IImageWithURL): LongWord;
 
 implementation
 
-procedure IWUWaitForFinish(AImage: IImageWithURL);
-const
-  WAIT_TIMEOUT = 10;
+function IWUWaitForFinish(AImage: IImageWithURL): LongWord;
 begin
-  while AImage.IsLoadingNow do begin
-    if ( TThread.Current.ThreadID = MainThreadId ) then begin
-      CheckSynchronize(WAIT_TIMEOUT);
-    end else
-      Sleep(WAIT_TIMEOUT);
-  end;
+  if Assigned(AImage.ImageManager) then
+    Result := AImage.ImageManager.WaitForItem(AImage);
 end;
 
 end.

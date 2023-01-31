@@ -60,6 +60,7 @@ type
       property BitmapIWU: TBitmap read GetBitmapIWU;
       property OnLoadingFinished: TOnLoadingFinishedEvent read GetOnLoadingFinished write SetOnLoadingFinished;
     { ❤ --------------- }
+      procedure ZoomPicture(AZoomValue: integer);
       property MoveFactor: single read FMoveFactor write FMoveFactor;
       property ZoomFactor: single read FZoomFactor write FZoomFactor;
       property EnableZoomingOutOfFit: boolean read FEnableZoomingOutOfFit write FEnableZoomingOutOfFit;
@@ -183,6 +184,11 @@ end;
 procedure TImageWithUrlViewer.WaitForFinish;
 begin
   IWUWaitForFinish(Self);
+end;
+
+procedure TImageWithUrlViewer.ZoomPicture(AZoomValue: integer);
+begin
+  Self.DoZoom(AZoomValue);
 end;
 
 procedure TImageWithUrlViewer.DoGesture(const EventInfo: TGestureEventInfo;

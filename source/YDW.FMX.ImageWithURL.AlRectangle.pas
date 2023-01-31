@@ -5,7 +5,7 @@ unit YDW.FMX.ImageWithURL.AlRectangle;
 interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, FMX.Graphics,
-  AlFmxObjects, YDW.FMX.ImageWithURL.Interfaces;
+  Alcinoe.FMX.Objects, YDW.FMX.ImageWithURL.Interfaces;
 
 type
 

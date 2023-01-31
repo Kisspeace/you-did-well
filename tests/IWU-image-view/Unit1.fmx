@@ -1,0 +1,202 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = 'Form1'
+  ClientHeight = 510
+  ClientWidth = 345
+  Fill.Kind = Gradient
+  Fill.Gradient.Points = <
+    item
+      Color = xFF121212
+      Offset = 0.000000000000000000
+    end
+    item
+      Color = xFF252525
+      Offset = 1.000000000000000000
+    end>
+  Fill.Gradient.StartPosition.X = 0.500000000000000000
+  Fill.Gradient.StartPosition.Y = 1.000000000000000000
+  Fill.Gradient.StopPosition.X = 0.499999970197677600
+  Fill.Gradient.StopPosition.Y = 0.000000000000000000
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  DesignerMasterStyle = 0
+  object MainLayer: TLayout
+    Align = Client
+    Size.Width = 345.000000000000000000
+    Size.Height = 510.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object MainMenu: TVertScrollBox
+      Align = Client
+      Size.Width = 345.000000000000000000
+      Size.Height = 510.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Viewport.Width = 345.000000000000000000
+      Viewport.Height = 510.000000000000000000
+      object Button1: TButton
+        Align = MostTop
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Position.X = 5.000000000000000000
+        Position.Y = 5.000000000000000000
+        Size.Width = 335.000000000000000000
+        Size.Height = 41.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Text = 'Open picture'
+        OnClick = Button1Click
+      end
+      object EditZoom: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Top
+        TabOrder = 3
+        Position.X = 5.000000000000000000
+        Position.Y = 88.000000000000000000
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Size.Width = 335.000000000000000000
+        Size.Height = 32.000000000000000000
+        Size.PlatformDefault = False
+        object Text2: TText
+          Align = MostRight
+          Position.X = 232.000000000000000000
+          Size.Width = 103.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          Text = 'Zoom factor'
+          TextSettings.FontColor = xFF595959
+        end
+      end
+      object EditMove: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Top
+        TabOrder = 1
+        Position.X = 5.000000000000000000
+        Position.Y = 125.000000000000000000
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Size.Width = 335.000000000000000000
+        Size.Height = 32.000000000000000000
+        Size.PlatformDefault = False
+        object Text1: TText
+          Align = MostRight
+          Position.X = 232.000000000000000000
+          Size.Width = 103.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          Text = 'Move factor'
+          TextSettings.FontColor = xFF595959
+        end
+      end
+      object EditURL: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Top
+        TabOrder = 2
+        Position.X = 5.000000000000000000
+        Position.Y = 51.000000000000000000
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Size.Width = 335.000000000000000000
+        Size.Height = 32.000000000000000000
+        Size.PlatformDefault = False
+        TextPrompt = 'Picture URL link'
+        object ClearEditButton1: TClearEditButton
+          CanFocus = False
+          Cursor = crArrow
+          Size.Width = 32.000000000000000000
+          Size.Height = 28.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+        end
+      end
+      object Button2: TButton
+        Align = Top
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Position.X = 5.000000000000000000
+        Position.Y = 162.000000000000000000
+        Size.Width = 335.000000000000000000
+        Size.Height = 29.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 4
+        Text = 'Set default values'
+        OnClick = Button2Click
+      end
+      object Rectangle1: TRectangle
+        Align = Top
+        Fill.Kind = Gradient
+        Fill.Gradient.Points = <
+          item
+            Color = xFF393939
+            Offset = 0.000000000000000000
+          end
+          item
+            Color = xFF949494
+            Offset = 1.000000000000000000
+          end>
+        Fill.Gradient.StartPosition.X = 1.000000000000000000
+        Fill.Gradient.StartPosition.Y = 1.000000000000000000
+        Fill.Gradient.StopPosition.Y = 0.000000017114270889
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Position.X = 5.000000000000000000
+        Position.Y = 196.000000000000000000
+        Size.Width = 335.000000000000000000
+        Size.Height = 58.000000000000000000
+        Size.PlatformDefault = False
+        Stroke.Kind = None
+        object CheckDoubleTap: TCheckBox
+          Align = Top
+          Margins.Left = 5.000000000000000000
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Position.X = 5.000000000000000000
+          Position.Y = 5.000000000000000000
+          Size.Width = 325.000000000000000000
+          Size.Height = 19.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 5
+          Text = 'Double tap to best fit'
+        end
+        object CheckOutOfFit: TCheckBox
+          Align = Top
+          Margins.Left = 5.000000000000000000
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Position.X = 5.000000000000000000
+          Position.Y = 29.000000000000000000
+          Size.Width = 325.000000000000000000
+          Size.Height = 19.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 6
+          Text = 'Enable zooming out of fit'
+        end
+      end
+      object Button3: TButton
+        Align = Top
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Position.X = 5.000000000000000000
+        Position.Y = 259.000000000000000000
+        Size.Width = 335.000000000000000000
+        Size.Height = 35.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 6
+        Text = 'Change fullscreen mode'
+        OnClick = Button3Click
+      end
+    end
+  end
+end

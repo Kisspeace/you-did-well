@@ -24,6 +24,7 @@ type
     { ❤ --------------- }
       FEnableZoomingOutOfFit: boolean;
       FBestFitOnDoubleTap: boolean;
+      FInvertMouseWheel: boolean;
       FLastZoomDist: Integer;
       FZoomFactor: Single;
       FMoveFactor: Single;
@@ -66,6 +67,7 @@ type
       procedure FitHeight;
       property MoveFactor: single read FMoveFactor write FMoveFactor;
       property ZoomFactor: single read FZoomFactor write FZoomFactor;
+      property InvertMouseWheel: boolean read FInvertMouseWheel write FInvertMouseWheel;
       property EnableZoomingOutOfFit: boolean read FEnableZoomingOutOfFit write FEnableZoomingOutOfFit;
       property BestFitOnDoubleTap: boolean read FBestFitOnDoubleTap write FBestFitOnDoubleTap;
       property OnZoomBegin: TZoomingEvent read FOnZoomBegin write FOnZoomBegin;
@@ -383,6 +385,7 @@ procedure TImageWithUrlViewer.MouseWheel(Shift: TShiftState; WheelDelta: Integer
   var Handled: Boolean);
 begin
   Handled := True;
+  if FInvertMouseWheel then WheelDelta := -WheelDelta;
   Self.DoZoom(WheelDelta);
   inherited;
 end;

@@ -31,6 +31,7 @@ type
       FMovePoint: TPointF;
       FPrevContentBounds: TSizeF;
       FOnZoomBegin: TZoomingEvent;
+      procedure FitWithSize(AWidth, AHeight: integer);
     protected
       function GetImageURL: string;
       procedure SetImageURL(const Value: string);
@@ -61,6 +62,8 @@ type
       property OnLoadingFinished: TOnLoadingFinishedEvent read GetOnLoadingFinished write SetOnLoadingFinished;
     { ❤ --------------- }
       procedure ZoomPicture(AZoomValue: integer);
+      procedure FitWidth;
+      procedure FitHeight;
       property MoveFactor: single read FMoveFactor write FMoveFactor;
       property ZoomFactor: single read FZoomFactor write FZoomFactor;
       property EnableZoomingOutOfFit: boolean read FEnableZoomingOutOfFit write FEnableZoomingOutOfFit;
@@ -276,6 +279,43 @@ procedure TImageWithUrlViewer.FinishMove;
 begin
   Self.FNeedToMove := False;
 //  Self.Cursor := crHandPoint;
+end;
+
+procedure TImageWithUrlViewer.FitHeight;
+begin
+  FitWithSize(0, Bitmap.Height);
+end;
+
+procedure TImageWithUrlViewer.FitWidth;
+begin
+  FitWithSize(Bitmap.Width, 0);
+end;
+
+procedure TImageWithUrlViewer.FitWithSize(AWidth, AHeight: integer);
+var
+  R: TRectF;
+  s: Single;
+begin
+  { modified TImageViewer.BestFit; }
+  if (Content <> nil) and (ContentLayout <> nil) then
+  begin
+    R := RectF(0, 0, AWidth, AHeight);
+    s := R.Fit(ContentLayout.LocalRect);
+    if s >= 1 then
+      BitmapScale := 1 / s
+    else
+      BitmapScale := 1;
+    if (VScrollBar <> nil) and (VScrollBar.Enabled)
+    or (HScrollBar <> nil) and (HScrollBar.Enabled) then
+    begin { Need realign with enabled scrolls }
+      R := RectF(0, 0, AWidth, AHeight);
+      s := R.Fit(ContentLayout.LocalRect);
+      if s >= 1 then
+        BitmapScale := 1 / s
+      else
+        BitmapScale := 1;
+    end;
+  end
 end;
 
 procedure TImageWithUrlViewer.DoMouseLeave;

@@ -87,9 +87,7 @@ begin
 
   {$IFNDEF ANDROID}
     FZoomFactor := 0.001;
-    FMoveFactor := 1.85;
   {$ELSE}
-    FMoveFactor := 1.85;
     FZoomFactor := 0.005;
   {$ENDIF}
 
@@ -280,7 +278,6 @@ end;
 procedure TImageWithUrlViewer.FinishMove;
 begin
   Self.FNeedToMove := False;
-//  Self.Cursor := crHandPoint;
 end;
 
 procedure TImageWithUrlViewer.FitHeight;
@@ -336,7 +333,6 @@ procedure TImageWithUrlViewer.MouseDown(Button: TMouseButton; Shift: TShiftState
   X, Y: Single);
 begin
   inherited;
-//  Self.Cursor := crSQLWait;
   FMovePoint := TPointF.Create(X, Y);
   FNeedToMove := True;
 end;
@@ -379,7 +375,6 @@ begin
   inherited;
   FinishMove;
 end;
-//{$ENDIF}
 
 procedure TImageWithUrlViewer.MouseWheel(Shift: TShiftState; WheelDelta: Integer;
   var Handled: Boolean);

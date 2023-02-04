@@ -5,8 +5,7 @@ unit YDW.Threading;
 interface
 uses
   System.SysUtils, System.Generics.Collections,
-  IoUtils, System.Classes, System.Generics.Defaults, System.SysConst,
-  YDW.Debug, System.SyncObjs;
+  System.Classes, System.SyncObjs, YDW.Debug;
 
 type
 
@@ -69,7 +68,6 @@ type
       FQueue: TList<T>;
       FRunning: TThreadAndValueList;
       FWaitList: TThreadList;
-//      FGarbage: TObjectList<TObject>;
       function NewSubThread(AValue: T): TSubWorkerThread;
       function QueueCondition: boolean; virtual;
       function AutoRestartCondition: boolean; virtual;
@@ -131,7 +129,7 @@ begin
             if ( not Self.QueueCondition ) then
               break;
 
-            LItem := TThreadAndValue<T>.Create(FQueue.First); // get next Value from queue
+            LItem := TThreadAndValue<T>.Create(FQueue.First); { get next Value from queue }
             LNewThread := NewSubThread(LItem.Value);
             LItem.Thread := LNewThread;
             FRunning.Add(LItem);
@@ -163,42 +161,8 @@ begin
             var LThread := FRunning[I].Thread;
 
             LThread.Terminate;
-            
-//            if (not LThread.Started) and Self.OnWaitList(LThread) then begin
-//              FRunning[I].Thread.Free;
-//              var LUpdatedItem := TThreadAndValue<T>.Create(FRunning[I].Value);
-//              LUpdatedItem.Thread := nil;
-//              FRunning[I] := LUpdatedItem;
-//            end;
 
           end;
-
-          { -- May have issues block begin ! -- }
-//          var LThPos: integer := FRunning.Count - 1;
-//          var LTargetPos: integer;
-//
-//          while TRUE do begin
-//
-//            LTargetPos := -1;
-//
-//            if (LThPos < 0) or (FRunning.Count < 1) then
-//              break;
-//
-//            for I := LThPos downto 0 do begin
-//              if not Assigned(FRunning[I].Thread) then begin
-//                LTargetPos := I;
-//                break;
-//              end;
-//            end;
-//
-//            if LTargetPos <> -1 then begin
-//              FRunning.Delete(LTargetPos);
-//              Dec(LThPos);
-//            end else
-//              Break;
-//
-//          end;
-          { -- block end. -- }
 
         finally
           FLock.EndWrite();
@@ -218,20 +182,6 @@ begin
             FWaitList.UnlockList;
           end;
         end;
-
-        {$IFDEF YDW_DEBUG} try {$ENDIF}
-//          FLock.BeginWrite;
-//          try
-//            FGarbage.Clear;
-//          finally
-//            FLock.EndWrite;
-//          end;
-        {$IFDEF YDW_DEBUG} except
-          On E: Exception do begin
-            YDW.Debug.Log('TGenericYDWQueuedThread<T>.Execute(FGarbage.Clear)', E);
-            raise E;
-          end;
-        end; {$ENDIF}
         
       end;
     until not AutoRestartCondition;
@@ -243,16 +193,6 @@ begin
 
   end;
 end;
-
-//procedure TGenericYDWQueuedThread<T>.GarbageAdd(AItem: TObject);
-//begin
-//  FLock.BeginWrite;
-//  try
-//    FGarbage.Add(AItem);
-//  finally
-//    FLock.EndWrite;
-//  end;
-//end;
 
 function TGenericYDWQueuedThread<T>.GetThreadByItem(
   AValue: T): TSubWorkerThread;
@@ -289,9 +229,6 @@ begin
   Result.Owner := Self;
   Result.Value := AValue;
   Result.FreeOnTerminate := False;
-//  {$IFDEF DEBUG}
-//  Result.NameThreadForDebugging('YDW-Sub');
-//  {$ENDIF}
 end;
 
 function TGenericYDWQueuedThread<T>.RunningCount: integer;
@@ -413,9 +350,6 @@ begin
   FThread := TWorkerThread.Create(True);
   FThread.Owner := Self;
   FThread.FreeOnTerminate := False;
-//  {$IFDEF YDW_DEBUG}
-//  FThread.NameThreadForDebugging('YDW-Top');
-//  {$ENDIF}
   FThread.Start;
 
   While not FThread.Started do
@@ -480,7 +414,6 @@ begin
   FThreadsCount := DEFAULT_THREADS_COUNT;
   FWaitList := TThreadList.Create;
   FWaitList.Duplicates := dupAccept;
-//  FGarbage := TObjectList<TObject>.Create;
 end;
 
 destructor TGenericYDWQueuedThread<T>.Destroy;
@@ -489,7 +422,6 @@ begin
   FQueue.Free;
   FRunning.Free;
   FWaitList.Free;
-//  FGarbage.Free;
 end;
 
 procedure TGenericYDWQueuedThread<T>.OnSubThreadFinish;
@@ -526,21 +458,6 @@ begin
   Result := FQueue.Count > 0;
 end;
 
-//function TGenericYDWQueuedThread<T>.RunningIndexByThread(
-//  const AThread: TThread): integer;
-//var
-//  I: integer;
-//begin
-//   for I := 0 to FRunning.Count - 1 do begin
-//    if ( FRunning[I].Thread.ThreadID = AThread.ThreadId ) then begin
-//      Result := I;
-//      exit;
-//    end;
-//  end;
-//  Result := -1;
-//end;
-
-
 { TObjectYDWQueuedThreadComponent<T> }
 
 function TGenericYDWQueuedThreadObject<T>.RunningIndex(AValue: T): integer;
@@ -548,7 +465,8 @@ var
   I: integer;
 begin
   for I := 0 to FRunning.Count - 1 do begin
-    if ( AValue = FRunning[I].value ) then begin
+    if ( AValue = FRunning[I].value ) then
+    begin
       Result := I;
       exit;
     end;
@@ -563,7 +481,8 @@ var
   I: integer;
 begin
   for I := 0 to FRunning.Count - 1 do begin
-    if ((AValue as TObject) = (FRunning[I].value as TObject )) then begin
+    if ((AValue as TObject) = (FRunning[I].value as TObject )) then
+    begin
       Result := I;
       exit;
     end;
@@ -586,30 +505,28 @@ var
   TempItem: TThreadAndValue<T>;
 begin
   try
-//      Try
-      Owner.SubThreadExecute(Value);
-//      except
-//        On E: Exception do
-//      End;
+    Owner.SubThreadExecute(Value);
+
   finally
     Owner.FLock.BeginWrite();
     try
       LastIndex := Owner.FRunning.Count - 1;
 
       for I := 0 to LastIndex do begin
-        if ( Owner.FRunning[I].Thread = TThread.Current ) then begin
+        if ( Owner.FRunning[I].Thread = TThread.Current ) then
+        begin
           ThreadIndex := I;
           Break;
         end;
       end;
 
-      if ( ThreadIndex <> LastIndex ) and ( Owner.FRunning.Count > 1 ) then begin
+      if ( ThreadIndex <> LastIndex ) and ( Owner.FRunning.Count > 1 ) then
+      begin
         Owner.FRunning.Exchange(LastIndex, ThreadIndex);
-//          FRunning[ThreadIndex] := FRunning[LastIndex];
       end;
 
       Owner.FRunning.Delete(LastIndex);
-//      Owner.FGarbage.Add(Self);
+
     finally
       Owner.FLock.EndWrite();
     end;

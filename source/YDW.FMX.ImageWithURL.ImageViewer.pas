@@ -91,6 +91,7 @@ begin
     FZoomFactor := 0.005;
   {$ENDIF}
 
+  FMoveFactor := 1.85;
   FEnableZoomingOutOfFit := False;
   FBestFitOnDoubleTap    := True;
 

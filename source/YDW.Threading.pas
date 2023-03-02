@@ -126,29 +126,25 @@ begin
 
           FLock.BeginWrite();
           try
-            if ( not Self.QueueCondition ) then
-              break;
+            if ( Self.QueueCondition ) then begin
 
-            LItem := TThreadAndValue<T>.Create(FQueue.First); { get next Value from queue }
-            LNewThread := NewSubThread(LItem.Value);
-            LItem.Thread := LNewThread;
-            FRunning.Add(LItem);
-            FQueue.Delete(0);
-            LNewThread.Start;
+              LItem := TThreadAndValue<T>.Create(FQueue.First); { get next Value from queue }
+              LNewThread := NewSubThread(LItem.Value);
+              LItem.Thread := LNewThread;
+              FRunning.Add(LItem);
+              FQueue.Delete(0);
+              LNewThread.Start;
 
-            while not LNewThread.Started do
-              Sleep(1);
+              while not LNewThread.Started do
+                Sleep(1);
 
+            end;
           finally
             FLock.EndWrite();
           end;
 
-        end;
+          if ( RunningCount = 0 ) then break;
 
-        { waiting for end }
-        while ( RunningCount > 0 ) do begin
-          if TThread.Current.CheckTerminated then exit;
-          sleep(MICRO_SLEEP_TIME);
         end;
 
       finally

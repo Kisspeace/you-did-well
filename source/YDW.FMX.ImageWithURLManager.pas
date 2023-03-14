@@ -128,9 +128,9 @@ var
 
   function IsValidHTTPURL(const AURL: string): boolean;
   begin
-    Result := AURL.StartsWith('https://', True);
+    Result := AURL.StartsWith(TURI.SCHEME_HTTPS, True);
     if not Result then
-      Result := AURL.StartsWith('http://', True);
+      Result := AURL.StartsWith(TURI.SCHEME_HTTP, True);
   end;
 
   function IsStoredLocal(const AURL: string): boolean;
@@ -163,28 +163,35 @@ var
 
 begin
   LImage := AValue;
-
   LUrl := LImage.ImageURL; // Saved local url
   LFinalImage := nil;
 
   try
     try
-      if EnableLoadFromCache and Assigned(CacheManager)
+      if EnableLoadFromCache
+      and Assigned(CacheManager)
       and CacheManager.IsCached(LUrl) then begin
+
         // Have copy on cache
         CacheManager.LoadFromCache(LUrl, LImage.BitmapIWU);
         LImageLoaded := True;
+
       end else if IsStoredLocal(LUrl) then begin
+
         // Url is file path and file exists
         if SyncBitmapLoadFromFile then begin
-          TThread.Synchronize(TThread.Current, procedure begin
+
+          TThread.Synchronize(TThread.Current, procedure
+          begin
             if Self.LoadThumbnailFromFile then
               LImage.BitmapIWU.LoadThumbnailFromFile(LUrl, ThumbSize.Width, ThumbSize.Height) // ISSUE (FormOnCreate, FormOnShow)
             else
               LImage.BitmapIWU.LoadFromFile(LUrl);  // ISSUE (FormOnCreate, FormOnShow)
             LImageLoaded := True;
           end);
+
         end else begin // Usign buffer bitmap
+
           LBufBmp := TBitmap.Create;
           try
             {$IFDEF YDW_DEBUG} try {$ENDIF}
@@ -193,23 +200,26 @@ begin
             else
               LBufBmp.LoadFromFile(LUrl);  // ISSUE (FormOnCreate, FormOnShow)
 
-            TThread.Synchronize(nil,
+            TThread.Synchronize(TThread.Current,
             procedure
             begin
               LImage.BitmapIWU.Assign(LBufBmp);
               LImageLoaded := True;
             end);
+
             {$IFDEF YDW_DEBUG}
             Except
               on E: Exception do begin
                 Log('IsStoredLocal async load', E);
-                Raise E;
+                raise;
               end;
             end;
             {$ENDIF}
+
           finally
             LBufBmp.Free;
           end;
+
         end;
 
       end else begin
@@ -228,19 +238,18 @@ begin
           end;
 
           LClient.SynchronizeEvents := False;
-          LClient.Asynchronous := false;
+          LClient.Asynchronous := False;
           LClient.AutomaticDecompression := [THTTPCompressionMethod.Any];
 
           if TThread.Current.CheckTerminated then exit;
-
           LResponse := LClient.Get(LUrl);
           if TThread.Current.CheckTerminated then exit;
 
           if not AllowThisResponse(LUrl, LResponse) then exit;
 
-          Self.EncodeImage(LResponse.ContentStream, LFinalImage);
+          EncodeImage(LResponse.ContentStream, LFinalImage);
 
-          if Self.EnableSaveToCache and Assigned(CacheManager) then begin
+          if EnableSaveToCache and Assigned(CacheManager) then begin
             if not CacheManager.IsCached(LUrl) then
               CacheManager.CacheItem(LUrl, LFinalImage);
           end;
@@ -254,7 +263,8 @@ begin
 
         finally
 
-          if Assigned(LResponse) and (LFinalImage <> LResponse.ContentStream) then
+          if Assigned(LResponse)
+          and (LFinalImage <> LResponse.ContentStream) then
             FreeAndNil(LFinalImage);
 
           LClient.Free;
@@ -267,10 +277,11 @@ begin
       On E: Exception do
         DoOnException(E);
     end;
+
   finally
 
     if Assigned(LImage.OnLoadingFinished) then begin
-      TThread.Synchronize(nil,
+      TThread.Synchronize(TThread.Current,
       procedure
       begin
         LImage.OnLoadingFinished(LImage as TObject, LImageLoaded);

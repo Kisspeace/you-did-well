@@ -45,14 +45,14 @@ type
           Value: T;
           procedure Execute; override;
       End;
-      TThreadAndValue<T> = record
+      TThreadAndValue<T> = Class(TObject)
         public
           Thread: TSubWorkerThread;
           Value: T;
           constructor Create(AValue: T);
       end;
       { ❤-------------- }
-      TThreadAndValueList = TList<TThreadAndValue<T>>;
+      TThreadAndValueList = TObjectList<TThreadAndValue<T>>;
     protected
     { ❤ -- Thread safe --- }
       procedure SetThreadsCount(const value: integer);
@@ -63,14 +63,16 @@ type
       function IsRunning(AValue: T): boolean;
       function WaitForItem(AValue: T): LongWord;
       function OnWaitList(AThread: TSubWorkerThread): boolean;
+      function AutoRestartCondition: boolean; virtual;
     protected
       FThreadsCount: integer;
       FQueue: TList<T>;
       FRunning: TThreadAndValueList;
       FWaitList: TThreadList;
+//      FGarbage: TObjectList<TThread>;
+//      procedure ClearGarbage; { FIXME: Anal Violation sometimes. }
       function NewSubThread(AValue: T): TSubWorkerThread;
       function QueueCondition: boolean; virtual;
-      function AutoRestartCondition: boolean; virtual;
       procedure OnSubThreadFinish; virtual;
       function GetThreadByItem(AValue: T): TSubWorkerThread;
       function RunningIndex(AValue: T): integer; virtual; abstract; { dont forget this ! }
@@ -99,95 +101,104 @@ implementation
 
 function TGenericYDWQueuedThread<T>.AutoRestartCondition: boolean;
 begin
-  Result := ( Self.QueueCondition ) and
-            ( not TThread.Current.CheckTerminated);
+  FLock.BeginRead;
+  try
+    Result := ( Self.QueueCondition ) and
+              ( not TThread.Current.CheckTerminated);
+  finally
+    FLock.EndRead;
+  end;
 end;
 
 procedure TGenericYDWQueuedThread<T>.Execute;
 const
-  MICRO_SLEEP_TIME = 10;
+  MICRO_SLEEP_TIME = 2;
 var
   I: integer;
   LNewThread: TSubWorkerThread;
   LItem: TThreadAndValue<T>;
 begin
-  try
-    repeat
-      try
+  repeat
+    try
+      while ( TRUE ) do begin
 
-        while ( TRUE ) do begin
+        if TThread.Current.CheckTerminated then exit;
 
+        While ( RunningCount >= Self.ThreadsCount ) do begin
           if TThread.Current.CheckTerminated then exit;
-
-          While ( RunningCount >= Self.ThreadsCount ) do begin
-            if TThread.Current.CheckTerminated then exit;
-            Sleep(MICRO_SLEEP_TIME);
-          end;
-
-          FLock.BeginWrite();
-          try
-            if ( Self.QueueCondition ) then begin
-
-              LItem := TThreadAndValue<T>.Create(FQueue.First); { get next Value from queue }
-              LNewThread := NewSubThread(LItem.Value);
-              LItem.Thread := LNewThread;
-              FRunning.Add(LItem);
-              FQueue.Delete(0);
-              LNewThread.Start;
-
-              while not LNewThread.Started do
-                Sleep(1);
-
-            end;
-          finally
-            FLock.EndWrite();
-          end;
-
-          if ( RunningCount = 0 ) then break;
-
+          Sleep(MICRO_SLEEP_TIME);
         end;
 
-      finally
-
-        { Terminate all threads }
-        FLock.BeginWrite();
+        FLock.BeginWrite;
         try
+          if QueueCondition then begin
 
-          for I := 0 to FRunning.count - 1 do begin
-            var LThread := FRunning[I].Thread;
+            LItem := TThreadAndValue<T>.Create(FQueue.First); { get next Value from queue }
+            LNewThread := NewSubThread(LItem.Value);
+            LItem.Thread := LNewThread;
+            FRunning.Add(LItem);
+            FQueue.Delete(0);
+            LNewThread.Start;
 
-            LThread.Terminate;
+            while not LNewThread.Started do
+              Sleep(1);
+
+            LNewThread := Nil;
+            LItem := Nil;
 
           end;
+        finally
+          FLock.EndWrite;
+        end;
+
+        if (not AutoRestartCondition) 
+          and (RunningCount = 0) then break;
+
+      end;
+
+    finally
+
+      { Terminate all threads }
+      FLock.BeginWrite;
+      try
+        for I := 0 to FRunning.count - 1 do
+          FRunning[I].Thread.Terminate;
+      finally
+        FLock.EndWrite;
+      end;
+
+      { Waiting for finish }
+      while (RunningCount > 0) do begin
+        sleep(MICRO_SLEEP_TIME);
+      end;
+
+      var LListEmpty: boolean := False;
+      while (not LListEmpty) do begin
+        var LWaitList := FWaitList.LockList;
+        try
+          LListEmpty := (LWaitList.Count = 0);
+
+//          FLock.BeginWrite;
+//          try
+//            {$IFDEF YDW_DEBUG} try {$ENDIF}
+//              if LListEmpty then ClearGarbage; { Free used threads }
+//            {$IFDEF YDW_DEBUG} except
+//              On E: Exception do begin
+//                YDW.Debug.Log('TGenericYDWQueuedThread<T>.Execute ClearGarbage', E);
+//                raise;
+//              end;
+//            end; {$ENDIF}
+//          finally
+//            FLock.EndWrite;
+//          end;
 
         finally
-          FLock.EndWrite();
+          FWaitList.UnlockList;
         end;
-
-        { Waiting for finish }
-        while (RunningCount > 0) do begin
-          sleep(MICRO_SLEEP_TIME);
-        end;
-        
-        var LListEmpty: boolean := False;
-        while (not LListEmpty) do begin
-          var LWaitList := FWaitList.LockList;
-          try
-            LListEmpty := (LWaitList.Count = 0) 
-          finally
-            FWaitList.UnlockList;
-          end;
-        end;
-        
       end;
-    until not AutoRestartCondition;
-  except
-
-    on E: Exception do begin
-      Raise E;
+        
     end;
-
-  end;
+  until not AutoRestartCondition;
 end;
 
 function TGenericYDWQueuedThread<T>.GetThreadByItem(
@@ -229,9 +240,12 @@ end;
 
 function TGenericYDWQueuedThread<T>.RunningCount: integer;
 begin
-  FLock.BeginRead();
-  Result := Self.FRunning.Count;
-  FLock.EndRead();
+  FLock.BeginRead;
+  try
+    Result := Self.FRunning.Count;
+  finally
+    FLock.EndRead;
+  end; 
 end;
 
 procedure TGenericYDWQueuedThread<T>.SetThreadsCount(const Value: integer);
@@ -248,7 +262,6 @@ end;
 function TGenericYDWQueuedThread<T>.WaitForItem(AValue: T): LongWord;
 var
   LThread: TSubWorkerThread;
-  LIndex: integer;
 begin
   {$IFDEF YDW_DEBUG} try {$ENDIF}
     FLock.BeginRead;
@@ -260,14 +273,14 @@ begin
       FLock.EndRead;
     end;
 
-    if Assigned(LThread) then
+    if Assigned(LThread) then begin
       Result := LThread.WaitFor;
-
-    FWaitList.Remove(LThread);
+      FWaitList.Remove(LThread);
+    end;
   {$IFDEF YDW_DEBUG} except
     On E: Exception do begin
       YDW.Debug.Log('TGenericYDWQueuedThread<T>.WaitForItem', E);
-      raise E;
+      raise;
     end;
   end; {$ENDIF}
 end;
@@ -321,7 +334,7 @@ begin
   {$IFDEF YDW_DEBUG} except
     On E: Exception do begin
       YDW.Debug.Log('TYdwReusableThread.Terminate', E);
-      Raise E;
+      raise;
     end;
   end; {$ENDIF}
 end;
@@ -336,7 +349,7 @@ begin
   {$IFDEF YDW_DEBUG} except
     On E: Exception do begin
       YDW.Debug.Log('TYdwReusableThread.UnlockedIsRunning', E);
-      Raise E;
+      raise;
     end;
   end; {$ENDIF}
 end;
@@ -361,7 +374,7 @@ begin
   {$IFDEF YDW_DEBUG} except
     On E: exception do begin
       YDW.Debug.Log('TYdwReusableThread.WaitForFinish ' + FThread.ThreadID.ToString, E);
-      Raise E;
+      raise;
     end;
   end; {$ENDIF}
 end;
@@ -383,24 +396,26 @@ begin
   FLock.BeginWrite();
   try
     Index := Self.RunningIndex(AItem);
-    if ( Index <> -1 ) then begin
-      try
-        FRunning[Index].Thread.Terminate;
-      except
-        On E: exception do
-          raise E;
-      end;
-    end;
+    if ( Index <> -1 ) then
+      FRunning[Index].Thread.Terminate;
 
     Index := FQueue.IndexOf(AItem);
-    if ( Index <> -1 ) then begin
+    if ( Index <> -1 ) then
       FQueue.Delete(Index);
-    end;
-
   finally
     FLock.EndWrite();
   end;
 end;
+
+//procedure TGenericYDWQueuedThread<T>.ClearGarbage;
+//begin
+//  try
+//    FGarbage.Clear;
+//  except
+//    On E: Exception do
+//      Log('TGenericYDWQueuedThread<T>.ClearGarbage FGarbage.Clear', E);
+//  end;
+//end;
 
 constructor TGenericYDWQueuedThread<T>.Create;
 begin
@@ -410,6 +425,7 @@ begin
   FThreadsCount := DEFAULT_THREADS_COUNT;
   FWaitList := TThreadList.Create;
   FWaitList.Duplicates := dupAccept;
+//  FGarbage := TObjectList<TThread>.Create;
 end;
 
 destructor TGenericYDWQueuedThread<T>.Destroy;
@@ -418,6 +434,16 @@ begin
   FQueue.Free;
   FRunning.Free;
   FWaitList.Free;
+
+//  {$IFDEF YDW_DEBUG} try {$ENDIF}
+//    Self.ClearGarbage;
+//    FGarbage.Free;
+//  {$IFDEF YDW_DEBUG} except
+//    On E: exception do begin
+//      YDW.Debug.Log('TGenericYDWQueuedThread<T>.Destroy ClearGarbage: ' + LStr, E);
+//      raise;
+//    end;
+//  end; {$ENDIF}
 end;
 
 procedure TGenericYDWQueuedThread<T>.OnSubThreadFinish;
@@ -477,7 +503,7 @@ var
   I: integer;
 begin
   for I := 0 to FRunning.Count - 1 do begin
-    if ((AValue as TObject) = (FRunning[I].value as TObject )) then
+    if ((AValue as TObject) = (FRunning[I].value as TObject)) then
     begin
       Result := I;
       exit;
@@ -492,13 +518,11 @@ procedure TYdwReusableThread.TWorkerThread.Execute;
 begin
   Owner.Execute;
 end;
-
-{ TGenericYDWQueuedThread<T>.TSubWorkerThread }
-
+
 procedure TGenericYDWQueuedThread<T>.TSubWorkerThread.Execute;
 var
-  I, ThreadIndex, LastIndex: integer;
-  TempItem: TThreadAndValue<T>;
+  I: integer;
+  ThreadIndex: integer;
 begin
   try
     Owner.SubThreadExecute(Value);
@@ -506,9 +530,8 @@ begin
   finally
     Owner.FLock.BeginWrite();
     try
-      LastIndex := Owner.FRunning.Count - 1;
 
-      for I := 0 to LastIndex do begin
+      for I := 0 to Owner.FRunning.Count - 1 do begin
         if ( Owner.FRunning[I].Thread = TThread.Current ) then
         begin
           ThreadIndex := I;
@@ -516,12 +539,8 @@ begin
         end;
       end;
 
-      if ( ThreadIndex <> LastIndex ) and ( Owner.FRunning.Count > 1 ) then
-      begin
-        Owner.FRunning.Exchange(LastIndex, ThreadIndex);
-      end;
-
-      Owner.FRunning.Delete(LastIndex);
+      Owner.FRunning.Delete(ThreadIndex);
+//      Owner.FGarbage.Add(TThread.Current);
 
     finally
       Owner.FLock.EndWrite();

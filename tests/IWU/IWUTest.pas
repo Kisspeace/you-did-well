@@ -410,8 +410,30 @@ begin
 end;
 
 procedure TForm2.FormDestroy(Sender: TObject);
+var
+  I: integer;
+
+  procedure NilManager(AObject: TComponent);
+  var
+    I: integer;
+    LIWU: IImageWithURL;
+  begin
+    if Supports(AObject, IImageWithURL, LIWU) then
+      LIWU.ImageManager := Nil;
+
+    for I := 0 to AObject.ComponentCount - 1 do
+    begin
+      NilManager(AObject.Components[I])
+    end;
+  end;
+
 begin
-  ImgManager.Free;
+  for I := 0 to Images.Count - 1 do
+    images[I].ImageManager := Nil;
+
+  nilManager(Self);
+
+  FreeAndNil(ImgManager);
 end;
 
 function TForm2.GetThreadsCount: integer;

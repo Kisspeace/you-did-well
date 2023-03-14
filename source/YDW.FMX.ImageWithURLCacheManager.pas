@@ -225,7 +225,7 @@ begin
     Except on E: Exception do begin
       Log('TImageWithURLCahceManager.LoadFromCache(); SyncBitmapLoadFromFile: ' +
           Booltostr(SyncBitmapLoadFromFile, True), E);
-      Raise E;
+      raise;
     end; end;
     {$ENDIF}
   end;
